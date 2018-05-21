@@ -1,6 +1,6 @@
 name := "scala-stomp-websocket-client"
 
-organization := "com.github.soylent-grin"
+organization := "org.github.soylent-grin"
 
 version := "0.1.0"
 
