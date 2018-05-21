@@ -1,12 +1,11 @@
 # Scala STOMP WebSocket Client
 
-Build on top of [WebSocket Scala Client](https://github.com/andyglow/websocket-scala-client) by [andyglow](https://github.com/andyglow)
-
 ## Done and ready to use
 
 * STOMP 1.1 without heartbeat
 * `CONNECT`, `SUBSCRIBE`, `UNSUBSCRIBE`, `DISCONNECT`, `ERROR` frame handling
 * Custom WS endpoint and HTTP headers
+* Integration with Play! Framework (no Netty-dependency issues because of standalone WS transport)
 
 ## Not ready to use
 

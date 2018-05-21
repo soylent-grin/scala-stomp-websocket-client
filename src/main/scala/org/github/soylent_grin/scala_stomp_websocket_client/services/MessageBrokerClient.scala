@@ -3,32 +3,56 @@ package org.github.soylent_grin.scala_stomp_websocket_client.services
 import java.io.IOException
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.{AtomicBoolean, AtomicLong}
+import java.net.URI
+import collection.JavaConversions._
 
-import com.github.andyglow.websocket.util.Uri
-import com.github.andyglow.websocket.{Websocket, WebsocketClient}
 import org.github.soylent_grin.scala_stomp_websocket_client.models.Constants._
 import org.github.soylent_grin.scala_stomp_websocket_client.models.Frame
+import org.java_websocket.client.WebSocketClient
 
 import scala.collection.mutable.ListBuffer
 
 class MessageBrokerClient(uri: String, login: String = "", password: String = "", headers: Map[String, String] = Map.empty) {
 
-  private val client = new WebsocketClient.Builder[String](
-    Uri(uri),
-    receive,
-    WebsocketClient.Builder.Options(
-      {
+  class WebSocketClientImpl(uri: URI, headers: Map[String, String]) extends WebSocketClient(uri, headers) {
+
+    import org.java_websocket.handshake.ServerHandshake
+
+    def onOpen(handshakedata: ServerHandshake): Unit = {
+      doConnect()
+    }
+
+    def onMessage(message: String): Unit = {
+      try {
+        val f = Frame.from(message)
+        f.command match {
+          case CONNECTED =>
+            isOpened.set(true)
+            connectHandlers.foreach(_ ())
+          case ERROR =>
+            notifyFailure(new IOException(f.message))
+          case MESSAGE =>
+            notifyMessage(f.header(DESTINATION), f.message)
+          case _ =>
+          // do nothing
+        }
+      } catch {
         case t: Throwable =>
           notifyFailure(t)
-        case _ =>
+      }
+    }
 
-      },
-      notifyClose,
-      headers = headers
-    )
-  ).build()
+    def onClose(code: Int, reason: String, remote: Boolean): Unit = {
+      notifyClose()
+    }
 
-  private var ws: Option[Websocket] = None
+    def onError(ex: Exception): Unit = {
+      notifyFailure(ex)
+    }
+  }
+
+
+  private val client = new WebSocketClientImpl(new URI(uri), headers)
 
   private val messageHandlers = new ConcurrentHashMap[String, (String, String => Unit)]()
   private val connectHandlers = ListBuffer.empty[Unit => Unit]
@@ -41,13 +65,13 @@ class MessageBrokerClient(uri: String, login: String = "", password: String = ""
   // ---
 
   def connect() = {
-    ws = Some(client.open())
-    doConnect()
+    client.connectBlocking()
     this
   }
 
   def disconnect() = {
     doDisconnect()
+    client.close()
     this
   }
 
@@ -143,13 +167,8 @@ class MessageBrokerClient(uri: String, login: String = "", password: String = ""
   }
 
   private def sendFrame(f: Frame) = {
-    ws match {
-      case Some(w) =>
-        println(s"sending: ${f.toString}")
-        w ! f.toString
-      case _ =>
-        // not connected
-    }
+    println(f.toString)
+    client.send(f.toString)
   }
 
   private def receive: PartialFunction[Any, Unit] = {
