@@ -1,0 +1,36 @@
+package org.github.soylent_grin.scala_stomp_websocket_client.models
+
+object Constants {
+  val CONNECT = "CONNECT"
+  val STOMP = "STOMP"
+  val CONNECTED = "CONNECTED"
+  val SEND = "SEND"
+  val SUBSCRIBE = "SUBSCRIBE"
+  val UNSUBSCRIBE = "UNSUBSCRIBE"
+  val ACK = "ACK"
+  val NACK = "NACK"
+  val BEGIN = "BEGIN"
+  val COMMIT = "COMMIT"
+  val ABORT = "ABORT"
+  val DISCONNECT = "DISCONNECT"
+  val MESSAGE = "MESSAGE"
+  val RECEIPT = "RECEIPT"
+  val ERROR = "ERROR"
+  val END = "\u0000"
+
+  //Message
+  val SERVER = "server"
+  val ACCEPT_VERSION = "accept-version"
+  val VERSION = "version"
+  val HEARTBEAT = "heart-beat"
+  val CONTENT_TYPE_MESSAGE = "content-type"
+  val CONTENT_LENGTH_MESSAGE = " content-length"
+  val ID = "id"
+  val DESTINATION = "destination"
+  val SUBSCRIPTION = "subscription"
+  val RECEIPT_MESSAGE = "receipt"
+  val RECEIPT_ID = "receipt-id"
+  val MESSAGE_ID = "message-id"
+  val LOGIN = "login"
+  val PASSCODE = "passcode"
+}
