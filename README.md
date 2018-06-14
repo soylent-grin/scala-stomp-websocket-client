@@ -1,5 +1,22 @@
 # Scala STOMP WebSocket Client
 
+Prerequisites
+-------------
+* Scala 2.11.x
+
+### Installation
+
+Add the following line to your sbt dependencies: 
+```scala
+"com.github.vooolll" %% "scala-stomp-websocket-client" % "0.1.2"
+```
+
+Note: make sure that you have in your `build.sbt`
+```scala
+resolvers += Resolver.sonatypeRepo("releases")
+```
+
+
 ## Done and ready to use
 
 * STOMP 1.1 without heartbeat
